@@ -2,9 +2,12 @@
 
 A Trello project built with [React. js](https://reactjs.org/) and [Node.js](https://nodejs.org/) (Express.js). This project replicates the core features of Trello, including projects, boards, and tasks, and allows users to manage tasks through a drag-and-drop interface.
 
+##Video Demo
+A loom video demo of the project can be accessed [here](https://www.loom.com/share/37d0a962fa0b4857a300b4c691311bbb)
+
 ## Live Demo
 
-A live demo of the project can be accessed [here]().
+A live demo of the project can be accessed [here](https://trello-application-5672d.web.app/).
 ## Features
 
 - **User Authentication:**
