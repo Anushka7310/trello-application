@@ -1,19 +1,10 @@
 const express = require("express");
-const {
-  registerUser,
-  loginUser,
-  logout,
-
-  updatePassword,
-} = require("../controllers/userController");
-const { isAuthenticatedUser } = require("../middleware/auth");
+const userController = require("../Controllers/userController");
 const router = express.Router();
 
-router.route("/register").post(registerUser);
-
-router.route("/login").post(loginUser);
-
-router.route("/logout").get(logout);
-router.route("/password/update").put(isAuthenticatedUser, updatePassword);
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+router.get("/get-user", userController.getUser);
+router.post("/get-user-with-email", userController.getUserWithMail);
 
 module.exports = router;

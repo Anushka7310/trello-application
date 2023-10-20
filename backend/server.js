@@ -1,32 +1,49 @@
-const app = require("./app");
-
 const dotenv = require("dotenv");
-const connectDatabase = require("./config/database");
+const express = require("express");
+const unless = require("express-unless");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const userRoute = require("./Routes/userRoute");
+const boardRoute = require("./Routes/boardRoute");
+const auth = require("./Middlewares/auth");
 
-//Handling Uncaught Exception
-process.on("uncaughtException", (err) => {
-  console.log(`Error: ${err.message}`);
-  console.log(`Shutting down the server due to unhandled Uncaught Exception`);
-  process.exit(1);
-});
+dotenv.config();
+const app = express();
 
-//Config
+app.use(cors());
+app.use(express.json());
 
-dotenv.config({ path: "backend/config/config.env" });
+// AUTH VERIFICATION AND UNLESS
 
-//Connecting to database
-connectDatabase();
+auth.verifyToken.unless = unless;
 
-const server = app.listen(process.env.PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.PORT}`);
-});
+app.use(
+  auth.verifyToken.unless({
+    path: [
+      { url: "/user/login", method: ["POST"] },
+      { url: "/user/register", method: ["POST"] },
+    ],
+  })
+);
 
-//Unhandled Promise Rejection
-process.on("unhandledRejection", (error) => {
-  console.log(`Error: ${error.message}`);
-  console.log(`Shutting down the server due to unhandled Promise Rejection`);
+//MONGODB CONNECTION
 
-  server.close(() => {
-    process.exit(1);
+mongoose.Promise = global.Promise;
+mongoose
+  .connect(process.env.MONGO_URI, {})
+  .then(() => {
+    console.log("Database connection is succesfull!");
+  })
+  .catch((err) => {
+    console.log(`Database connection failed!`);
+    console.log(`Details : ${err}`);
   });
+
+//ROUTES
+
+app.use("/user", userRoute);
+app.use("/board", boardRoute);
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server is online! Port: ${process.env.PORT}`);
 });

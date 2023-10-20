@@ -1,70 +1,80 @@
-const ErrorHander = require("../utils/errorhander");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const User = require("../models/userModel");
-const sendToken = require("../utils/jwtToken");
+const bcrypt = require("bcryptjs");
+const userService = require("../Services/userService");
+const auth = require("../Middlewares/auth");
 
-//Register a User
-exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password, role, avatar } = req.body;
-  console.log(avatar);
-  const user = await User.create({
-    name,
-    role,
-    email,
-    password,
-    avatar: {
-      public_id: avatar,
-      url: avatar,
-    },
+const register = async (req, res) => {
+  const { name, surname, email, password } = req.body;
+  if (!(name && surname && email && password))
+    return res
+      .status("400")
+      .send({ errMessage: "Please fill all required areas!" });
+
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  req.body.password = hashedPassword;
+
+  await userService.register(req.body, (err, result) => {
+    if (err) return res.status(400).send(err);
+    return res.status(201).send(result);
   });
+};
 
-  sendToken(user, 201, res);
-});
-
-//Login User
-exports.loginUser = catchAsyncErrors(async (req, res, next) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
+  if (!(email && password))
+    return res
+      .status(400)
+      .send({ errMessage: "Please fill all required areas!" });
 
-  //checking if user has given password and email both
-  if (!email || !password) {
-    return next(new ErrorHander("Please Enter Email & Password", 400));
-  }
-  const user = await User.findOne({ email }).select("+password");
-  if (!user) {
-    return next(new ErrorHander("Invalid email or password"));
-  }
-  const isPasswordMatched = await user.comparePassword(password);
-  if (!isPasswordMatched) {
-    return next(new ErrorHander("Invalid email or password", 401));
-  }
-  sendToken(user, 200, res);
-});
+  await userService.login(email, (err, result) => {
+    if (err) return res.status(400).send(err);
 
-//Logout User
-exports.logout = catchAsyncErrors(async (req, res, next) => {
-  res.cookie("token", null, {
-    expires: new Date(Date.now()),
-    httpOnly: true,
+    const hashedPassword = result.password;
+    if (!bcrypt.compareSync(password, hashedPassword))
+      return res
+        .status(400)
+        .send({ errMessage: "Your email/password is wrong!" });
+
+    result.token = auth.generateToken(result._id.toString(), result.email);
+    result.password = undefined;
+    result.__v = undefined;
+
+    return res
+      .status(200)
+      .send({ message: "User login successful!", user: result });
   });
-  res.status(200).json({
-    success: true,
-    message: "Logged Out",
+};
+
+const getUser = async (req, res) => {
+  const userId = req.user.id;
+  await userService.getUser(userId, (err, result) => {
+    if (err) return res.status(404).send(err);
+
+    result.password = undefined;
+    result.__v = undefined;
+
+    return res.status(200).send(result);
   });
-});
+};
 
-//Update user password
-exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select("+password");
-  const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
-  if (!isPasswordMatched) {
-    return next(new ErrorHander("Old password is incorrect", 400));
-  }
+const getUserWithMail = async(req,res) => {
+  const {email} = req.body;
+  await userService.getUserWithMail(email,(err,result)=>{
+    if(err) return res.status(404).send(err);
 
-  if (req.body.newPassword !== req.body.confirmPassword) {
-    return next(new ErrorHander("password does not match", 400));
-  }
+    const dataTransferObject = {
+      name: result.name,
+      surname: result.surname,
+      color: result.color,
+      email : result.email
+    };
+    return res.status(200).send(dataTransferObject);
+  })
+}
 
-  user.password = req.body.newPassword;
-  await user.save();
-  sendToken(user, 200, res);
-});
+module.exports = {
+  register,
+  login,
+  getUser,
+  getUserWithMail,
+};
