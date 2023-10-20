@@ -10,6 +10,9 @@ import Store from "./Redux/Store";
 import { Route } from "react-router-dom";
 import FreeRoute from "./Utils/FreeRoute";
 import Board from "./Components/Pages/BoardPage/Board";
+import axios from "axios";
+axios.defaults.baseURL =
+  "https://us-central1-trello-application-5672d.cloudfunctions.net/trello";
 const App = () => {
   useEffect(() => {
     loadUser(Store.dispatch);
