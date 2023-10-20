@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const userRoute = require("./Routes/userRoute");
 const boardRoute = require("./Routes/boardRoute");
+const listRoute = require("./Routes/listRoute");
 const cardRoute = require("./Routes/cardRoute");
 const auth = require("./Middlewares/auth");
 
@@ -44,6 +45,7 @@ mongoose
 
 app.use("/user", userRoute);
 app.use("/board", boardRoute);
+app.use("/list", listRoute);
 app.use("/card", cardRoute);
 
 app.listen(process.env.PORT, () => {
