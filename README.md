@@ -2,6 +2,9 @@
 
 A Trello project built with [React. js](https://reactjs.org/) and [Node.js](https://nodejs.org/) (Express.js). This project replicates the core features of Trello, including projects, boards, and tasks, and allows users to manage tasks through a drag-and-drop interface.
 
+## Live Demo
+
+A live demo of the project can be accessed [here]().
 ## Features
 
 - **User Authentication:**
@@ -20,12 +23,6 @@ A Trello project built with [React. js](https://reactjs.org/) and [Node.js](http
 - **Responsive UI:**
   - The user interface is designed to be responsive, ensuring a seamless experience on various devices.
 
-## Demo
-
-
-
-A live demo of the project can be accessed [here]().
-
 ## Tech Stack
 
 - Frontend:
@@ -33,5 +30,19 @@ A live demo of the project can be accessed [here]().
 
 - Backend:
   - [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/) for the server.
+ 
+## Running the Application
+
+To run the project locally, follow these steps:
+
+### Frontend
+1. Navigate to the `client` directory: `cd client`.
+2. Install dependencies: `npm install`.
+3. Start the development server: `npm run start`.
+
+### Backend
+1. Navigate to the `backend` directory: `cd backend`
+2. Install dependencies: `npm install`.
+3. Start backend server: `npm run start`.
 
 
