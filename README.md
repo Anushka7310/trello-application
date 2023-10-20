@@ -43,7 +43,7 @@ To run the project locally, follow these steps:
 ### Backend
 1. Navigate to the `backend` directory: `cd backend`
 2. Install dependencies: `npm install`.
-3. Start backend server: `npm run start`.
+3. Start backend server: `npm run dev`.
 
 ## Setting Up Credentials
 
@@ -51,8 +51,6 @@ To run the application successfully, you need to set up your credentials. Add th
 
 ```dotenv
 # .env
-
-PORT=
 
 # MongoDB Database URI
 MONGO_URI=
