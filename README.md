@@ -45,4 +45,23 @@ To run the project locally, follow these steps:
 2. Install dependencies: `npm install`.
 3. Start backend server: `npm run start`.
 
+## Setting Up Credentials
+
+To run the application successfully, you need to set up your credentials. Add the following placeholders for your credentials in the .env file in backend folder:
+
+```dotenv
+# .env
+
+PORT=
+
+# MongoDB Database URI
+MONGO_URI=
+
+# JWT (JSON Web Tokens) Secret Key
+JWT_SECRET=
+
+# JWT Token Expiration (e.g., 5d for 5 days)
+TOKEN_EXPIRE_TIME=
+
+```
 
